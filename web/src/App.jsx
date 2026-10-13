@@ -41,7 +41,10 @@ function A({ href, children, style, ...rest }) {
   );
 }
 
+// Drop a photo at /public/images/products/<slug>.jpg to replace the placeholder badge.
 function ProductImage({ product, height = 220 }) {
+  const [ok, setOk] = useState(true);
+  if (ok) return <img src={`/images/products/${product.slug}.jpg`} alt={product.name} onError={() => setOk(false)} style={{ width: "100%", height, objectFit: "contain", background: "#fff", display: "block", borderBottom: `3px solid ${ORANGE}` }} />;
   const initials = product.name.split(" ").filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0]).join("");
   return (
     <div style={{ height, background: LIGHT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, borderBottom: `3px solid ${ORANGE}` }}>
@@ -311,12 +314,21 @@ function About() {
   </Prose></>);
 }
 function Management() {
-  const team = [["President & CEO", "Sets company strategy, builds partnerships and leads growth across North America."],
+  const team = [["Chief Operating Officer", "Coordinates sales, operations and customer service so the business runs smoothly every day."],
     ["Vice President, Operations", "Runs warehouse, logistics and supply chain so orders arrive on time and complete."],
     ["Director of Sales & Partnerships", "Leads distributor recruitment, dealer programs and key accounts."],
     ["Head of Engineering & Quality", "Oversees product development, OEM/ODM projects, testing and certification."]];
   return (<><PageBanner title="Management Profile" crumb={[["About", "/companyprofile.html"]]} /><Prose>
     <p>Our leadership team combines manufacturing experience with knowledge of the US market, so customers and partners get quality products and dependable service.</p>
+    <div className="card grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 32, alignItems: "center", padding: 24 }}>
+      <img src="/images/team/managing-director.jpeg" alt="Managing Director, Thinkwell USA" style={{ width: "100%", maxWidth: 420, display: "block" }} />
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ color: RED, fontWeight: 700, letterSpacing: 1 }}>MANAGING DIRECTOR</span>
+        <h2 style={{ margin: 0 }}>Managing Director, {COMPANY.short}</h2>
+        <p style={{ margin: 0, color: GRAY }}>The Managing Director leads {COMPANY.short}'s strategy and day-to-day operations in the United States. That covers the Ontario, California warehouse, distributor and dealer partnerships, and the company's commitment to dependable products and responsive service.</p>
+        <p style={{ margin: 0, color: GRAY }}>Under their leadership, {COMPANY.short} focuses on keeping stock close to customers, growing a nationwide partner network and delivering OEM/ODM projects on time.</p>
+      </div>
+    </div>
     <Grid>{team.map(([role, d]) => (
       <div key={role} className="card" style={{ padding: 24, textAlign: "center", display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
         <div style={{ width: 96, height: 96, borderRadius: "50%", background: LIGHT, border: `3px solid ${RED}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: RED }}>👤</div>
@@ -350,8 +362,13 @@ function Simple({ title, crumb, children }) { return <><PageBanner title={title}
 const SUP = [["Support", "/Quality-Control.html"]];
 function VideoPage({ title }) {
   return <Simple title={title} crumb={SUP}><p>Watch our products and production in action. New videos are added regularly.</p>
-    <Grid>{["Recovery kit overview", "Snatch block in use", "Hitch mount installation"].map((t) => <div key={t} className="card"><div style={{ height: 180, background: DARK, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>▶</div><div style={{ padding: 12 }}>{t}</div></div>)}</Grid>
+    <Grid min={300}>{["Recovery kit overview", "Snatch block in use", "Hitch mount installation"].map((t, i) => <VideoCard key={t} title={t} src={`/videos/${title.toLowerCase().replace(/ /g, "-")}-${i + 1}.mp4`} />)}</Grid>
     <div style={{ display: "flex", gap: 12 }}><Btn href="/Product-Video.html">Product Video</Btn><Btn href="/Factory-Video.html">Factory Video</Btn></div></Simple>;
+}
+// Drop MP4 files at /public/videos/<page>-<n>.mp4 (e.g. product-video-1.mp4) to replace placeholders.
+function VideoCard({ title, src }) {
+  const [ok, setOk] = useState(true);
+  return <div className="card">{ok ? <video src={src} controls preload="metadata" onError={() => setOk(false)} style={{ width: "100%", height: 200, background: DARK, display: "block" }} /> : <div style={{ height: 200, background: DARK, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>▶</div>}<div style={{ padding: 12 }}>{title}</div></div>;
 }
 function Contact() {
   return <Simple title="Contact Us"><div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 32 }}>
